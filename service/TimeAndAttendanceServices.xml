@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<services xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://moqui.org/xsd/service-definition-2.1.xsd" require-authentication="anonymous-all">
+    <!-- creating new timeEntry -->
+    <service verb="create" noun="TimeEntryClockIn">
+        <in-parameters>
+            <parameter name="openTimeSheet"/>
+            <parameter name="timeSheetBoolean" type="Boolean"/>
+        </in-parameters>
+
+        <actions>
+            <log message="===============service hitting clocking=================" />
+            <set field="workTypeEnumId" value="WktpGeneralLabor"/>
+            <set field="timesheetId" from="openTimeSheet"/>
+
+            <if condition="timeSheetBoolean">
+                <then>
+                    <service-call name="mantle.work.TimeServices.create#TimeEntryClockIn" in-map="context"/>
+                </then>
+                <else>
+                    <message type="warning">Create time sheet first</message>
+                </else>
+            </if>
+
+        </actions>
+    </service>
+
+    <!-- creating new timeSheet -->
+     <service verb="create" noun="TimeSheet">
+        <in-parameters>
+            <parameter name="partyId"/>
+        </in-parameters>
+
+        <actions>
+            <set field="fromDate" from="ec.user.nowTimestamp"/>
+            <set field="thruDate" from="ec.user.nowTimestamp + 7"/>
+            <!-- fromDate and thruDate needs to be define and the service needs to using cronjob  -->
+            <set field="statusId" value="TmshInProcess"/>
+            <service-call name="create#mantle.work.time.Timesheet" in-map="context"/>
+        </actions>
+    </service>
+
+    <!-- TimePeriod Test -->
+    <service verb="create" noun="TimePeriod">
+        <in-parameters>
+            <parameter name="partyId"/>
+        </in-parameters>
+
+        <actions>
+            <set field="fromDate" from="ec.user.nowTimestamp"/>
+            <set field="thruDate" from="ec.user.nowTimestamp + 14"/>
+            <set field="timePeriodTypeId" value="PayrollBiWeek"/>
+            <service-call name="mantle.party.TimeServices.create#TimePeriod" in-map="context"/>
+        </actions>
+    </service>
+
+    <!-- creating break timeEntry -->
+    <!-- <service verb="create" noun="breakStart">
+        <actions> -->
+            <!-- can be move to just call the service right away -->
+            <!-- <set field="workTypeEnumId" value="WktpPaidBreak"/>
+            <service-call name="mantle.work.TimeServices.create#TimeEntryClockIn" in-map="context"/>
+        </actions>
+    </service> -->
+
+    <!-- updating the breaktime -->
+    <!-- <service verb="store" noun="breakStop">
+        <actions> -->
+            <!-- can be move to just call the service right away -->
+            <!-- <service-call name="mantle.work.TimeServices.store#TimeEntry" in-map="context"/>
+        </actions>
+    </service> -->
+
+    <!-- edit timeEntry -->
+     <service verb="edit" noun="TimeEntry">
+        <in-parameters>
+            <parameter name="timeEntryId" required="true"/>
+            <parameter name="fromDate"/>
+            <parameter name="thruDate"/>
+            <parameter name="comments"/>
+            <parameter name="partyId"/>
+            <parameter name="workTypeEnumId"/>
+            <parameter name="timesheetId"/>
+
+        </in-parameters>
+
+        <actions>
+            <if condition="thruDate &gt; fromDate">
+                <script>
+                    EntityValue queryForTimeEntry = ec.entity.find("mantle.work.time.TimeEntry").condition( [ "timeEntryId" : timeEntryId, "partyId" : partyId ] ).one()
+                </script>
+                <if condition="queryForTimeEntry">
+                    <if condition="!fromDate">
+                        <set field="fromDate" from="queryForTimeEntry.fromDate"/>
+                    </if>
+                    <if condition="!thruDate">
+                        <set field="thruDate" from="queryForTimeEntry.thruDate"/>
+                    </if>
+                    <if condition="!workTypeEnumId">
+                        <set field="workTypeEnumId" from="queryForTimeEntry.workTypeEnumId"/>
+                    </if>
+                    <if condition="!timesheetId">
+                        <set field="timesheetId" from="queryForTimeEntry.timesheetId"/>
+                    </if>
+                    <service-call name="mantle.work.TimeServices.delete#TimeEntry" in-map="context" out-map="context"/>
+                    <service-call name="mantle.work.TimeServices.store#TimeEntry" in-map="context" out-map="context"/>
+                    <else><message type="warning">That time entry does not exist for you.</message></else>
+                </if>
+                <else>
+                    <message>Clock-out time should be later than clock-in time</message>
+                </else>
+            </if>
+        </actions>
+    </service>
+
+    <!-- calculating time/week -->
+    <service verb="calculate" noun="SumOfHours" type="java" location="com.mk.moqui.TimeAndAttendanceServices" method="calculateSumOfHours">
+        <in-parameters>
+            <parameter name="timeEntryList" type="List"/>
+            <parameter name="week" default-value="6"/>
+            <parameter name="day" default-value="MONDAY"/>
+
+        </in-parameters>
+    </service>
+
+     <!-- calculating overtime -->
+    <service verb="calculate" noun="SumOfOverTime" type="java" location="com.mk.moqui.TimeAndAttendanceServices" method="calculateSumOfHours">
+        <in-parameters>
+            <parameter name="timeEntryList" type="List"/>
+            <parameter name="week" default-value="1"/>
+            <parameter name="day"/>
+            <parameter name="overTime" default-value="true"/>
+
+        </in-parameters>
+    </service>
+
+      <!-- TimeSheet Test -->
+    <service verb="calculate" noun="SumOfTimeSheet" type="java" location="com.mk.moqui.TimeAndAttendanceServices" method="calculateTimeSheetHours">
+        <in-parameters>
+            <parameter name="timeEntryList" type="List"/>
+            <parameter name="timeSheet" type="Map"/>
+        </in-parameters>
+    </service>
+
+
+    <!-- filter by day and add total hours -->
+    <service verb="calculate" noun="DayAndHours" type="java" location="com.mk.moqui.TimeAndAttendanceServices" method="calculateDayAndHours">
+        <in-parameters>
+            <parameter name="timeEntryList" type="List"/>
+        </in-parameters>
+    </service>
+
+    <!-- calculate the number of times the user clock in/out -->
+    <service verb="calculate" noun="numberOfClockin" type="java" location="com.mk.moqui.TimeAndAttendanceServices" method="numberOfClockin">
+        <in-parameters>
+            <parameter name="timeEntryInside" type="List"/>
+            <parameter name="fromDate"/>
+        </in-parameters>
+    </service>
+
+    <!-- Calls the groovy checkForLongShift -->
+    <service verb="calculate" noun="checkForLongShift" type="java" location="com.mk.moqui.TimeAndAttendanceServices" method="checkForLongShift">
+         <in-parameters>
+            <parameter name="timeEntryInside" type="List"/>
+            <parameter name="fromDate"/>
+            <parameter name="thruDate"/>
+        </in-parameters>
+    </service>
+
+    <!-- service call to clock in/out from the navbar button -->
+    <service verb="create" noun="NavTimeService">
+        <in-parameters>
+            <parameter name="partyId"/>
+        </in-parameters>
+
+        <actions>
+            <!-- looks inside Time sheet and store in timeSheetList -->
+            <entity-find entity-name="mantle.work.time.Timesheet" list="timeSheetList">
+                <econdition field-name="partyId"/>
+            </entity-find>
+
+            <filter-map-list list="timeSheetList" to-list="openTimeSheetList">
+            </filter-map-list>
+
+
+            <!-- looks inside Time Entry and store in timeEntryList -->
+            <entity-find entity-name="mantle.work.time.TimeEntry" list="timeEntryList">
+                <order-by field-name="-fromDate"/>
+                <econdition field-name="partyId"/>
+            </entity-find>
+
+            <filter-map-list list="timeEntryList" to-list="openTimeEntryList">
+                <field-map field-name="thruDate" from="null"/>
+            </filter-map-list>
+
+            <set field="openTimeEntry" from="openTimeEntryList ? openTimeEntryList[0] : null"/>
+
+            <if condition="openTimeEntry">
+                <set field="timeEntryId" from="openTimeEntry.timeEntryId"/>
+            </if>
+
+            <set field="openTimeEntry" from="openTimeEntryList ? openTimeEntryList[0] : null"/>
+            <set field="timesheetId" value="${timeSheetList[-1].timesheetId}"/>
+
+
+            <if condition="openTimeEntry">
+                <then>
+                    <service-call name="mantle.work.TimeServices.store#TimeEntry" in-map="context"/>
+                    <message type="warning" public="true">Clocked Out</message>
+
+                </then>
+                <else>
+                    <service-call name="mantle.work.TimeServices.create#TimeEntryClockIn" in-map="context"/>
+                    <message type="warning" public="true">Clocked In</message>
+
+                </else>
+            </if>
+        </actions>
+    </service>
+
+    <!-- /////////////////////////////////////////////////////////////////////////// -->
+    <service verb="create" noun="">
+        <in-parameters>
+            <parameter name="partyId"/>
+        </in-parameters>
+
+        <actions>
+            <log message=" \n\n\n\n testService \n\n\n\n " />
+        </actions>
+    </service>
+
+    <service verb="calculate" noun="testService" type="java" location="com.mk.moqui.TimeAndAttendanceServices" method="calculateBreakTime">
+        <in-parameters>
+            <parameter name="timeEntryInside"/>
+        </in-parameters>
+    </service>
+
+
+    <service verb="create" noun="test">
+        <in-parameters>
+            <parameter name="partyId"/>
+        </in-parameters>
+
+        <actions>
+            <log message=" \n\n\n\n testService \n\n\n\n " />
+        </actions>
+    </service>
+    
+
+    
+
+
+  
+
+    
+
+</services>

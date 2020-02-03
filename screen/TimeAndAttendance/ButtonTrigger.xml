@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://moqui.org/xsd/xml-screen-2.1.xsd"
+        require-authentication="anonymous-all" menu-include="false" >
+
+
+
+    <always-actions>
+        <set field="partyId" from="ec.user.userAccount.partyId"/>
+        <!-- <set field="partyId" from="ec.user.userId"/> -->
+        <set field="isAdmin" from="ec.user.isInGroup('ADMIN')"/>
+    </always-actions>
+
+
+
+</screen>
