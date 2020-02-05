@@ -134,7 +134,7 @@
         </in-parameters>
     </service>
 
-      <!-- TimeSheet Test -->
+      <!-- servise to calculateTimeSheetHours -->
     <service verb="calculate" noun="SumOfTimeSheet" type="java" location="com.mk.moqui.TimeAndAttendanceServices" method="calculateTimeSheetHours">
         <in-parameters>
             <parameter name="timeEntryList" type="List"/>
@@ -198,7 +198,6 @@
             <filter-map-list list="timeSheetList" to-list="openTimeSheetList">
             </filter-map-list>
 
-
             <!-- looks inside Time Entry and store in timeEntryList -->
             <entity-find entity-name="mantle.work.time.TimeEntry" list="timeEntryList">
                 <order-by field-name="-fromDate"/>
@@ -234,16 +233,21 @@
         </actions>
     </service>
 
-    <!-- /////////////////////////////////////////////////////////////////////////// -->
-    <service verb="create" noun="">
+    <!-- service call to submit the time sheet and change the statusId to complete -->
+    <service verb="update" noun="submitTimeSheet">
         <in-parameters>
             <parameter name="partyId"/>
+            <parameter name="timesheetId"/>
         </in-parameters>
 
         <actions>
-            <log message=" \n\n\n\n testService \n\n\n\n " />
+            <set field="statusId" value="TmshCompleted"/>
+            <service-call name="update#mantle.work.time.Timesheet" in-map="context"/>
         </actions>
     </service>
+
+    <!-- /////////////////////////////////////////////////////////////////////////// -->
+    
 
 
 </services>

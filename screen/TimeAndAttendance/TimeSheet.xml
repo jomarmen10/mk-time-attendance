@@ -3,7 +3,7 @@
 <screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://moqui.org/xsd/xml-screen-2.1.xsd"
         require-authentication="anonymous-all" default-menu-title="Time Sheet" default-menu-index="2">
 
-    <transition name="showPage"><default-response url="../ExelSheet"/></transition>
+    <transition name="showPage"><default-response url="../TimeSheetv1"/></transition>
 
     <always-actions>
         <set field="partyId" from="ec.user.userAccount.partyId"/>
