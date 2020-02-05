@@ -158,11 +158,83 @@ public class TimeAndAttendanceServices {
     }
 
     static Map calculateBreakTime(ExecutionContext ec) {
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS");
 
-       println "====================="
-    //    println timeEntry
-       println "====================="
+        def arraySize = ec.context.timeEntryInside.size()
+        def timeEntry = ec.context.timeEntryInside
+        def fromDate = ec.context.fromDate
+        def container = []
+        double result = 0
+
+        Calendar c = GregorianCalendar.getInstance()
+
+        for(int i = 0; i < arraySize; i++){
+            def dfFromDate = df.format(timeEntry[i].fromDate)
+            if(fromDate == dfFromDate){
+                container.add(timeEntry[i])
+            }  
+        }
+
+        def contSize = container.size()
+        for(int i = 0; i < contSize; i++) {
+            if(i != contSize-1){
+                Date parseThru = sdf.parse(container[i].thruDate.toString())
+                Date parseFrom = sdf.parse(container[i+1].fromDate.toString())
+                long minFrom = parseFrom.getTime() / 60000
+                long minThru = parseThru.getTime() / 60000
+                result += minFrom - minThru
+            }
+
+        }
+
+        DecimalFormat df2 = new DecimalFormat("###.##")
+        Map totalHours = ["calculateBreakTime":df2.format(result / 60)]
+        return totalHours
+        
     }
+
+    static Map calculateLongBreak(ExecutionContext ec) {
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS");
+
+        def arraySize = ec.context.timeEntryInside.size()
+        def timeEntry = ec.context.timeEntryInside
+        def fromDate = ec.context.fromDate
+        def container = []
+        double result = 0
+
+        Calendar c = GregorianCalendar.getInstance()
+
+        for(int i = 0; i < arraySize; i++){
+            def dfFromDate = df.format(timeEntry[i].fromDate)
+            if(fromDate == dfFromDate){
+                container.add(timeEntry[i])
+            }  
+        }
+
+        def contSize = container.size()
+        for(int i = 0; i < contSize; i++) {
+            if(i != contSize-1){
+                Date parseThru = sdf.parse(container[i].thruDate.toString())
+                Date parseFrom = sdf.parse(container[i+1].fromDate.toString())
+                long minFrom = parseFrom.getTime() / 60000
+                long minThru = parseThru.getTime() / 60000
+                def output = minFrom - minThru
+                if(output > result){
+                    result = minFrom - minThru
+                }
+            }
+
+        }
+
+        DecimalFormat df2 = new DecimalFormat("###.##")
+        Map totalHours = ["calculateLongBreak":df2.format(result / 60)]
+        return totalHours
+        
+    }
+    
+    
 
     
 }

@@ -9,7 +9,7 @@
         </in-parameters>
 
         <actions>
-            <log message="===============service hitting clocking=================" />
+            <log message="===============${ec.user.nowTimestamp}=================" />
             <set field="workTypeEnumId" value="WktpGeneralLabor"/>
             <set field="timesheetId" from="openTimeSheet"/>
 
@@ -167,6 +167,22 @@
         </in-parameters>
     </service>
 
+    <!-- Calls the groovy calculateBreakTime -->
+    <service verb="calculate" noun="calculateBreakTime" type="java" location="com.mk.moqui.TimeAndAttendanceServices" method="calculateBreakTime">
+        <in-parameters>
+            <parameter name="timeEntryInside" type="List"/>
+            <parameter name="fromDate"/>
+        </in-parameters>
+    </service>
+
+    <!-- Calls the groovy calculateLongBreak -->
+    <service verb="calculate" noun="calculateLongBreak" type="java" location="com.mk.moqui.TimeAndAttendanceServices" method="calculateLongBreak">
+        <in-parameters>
+            <parameter name="timeEntryInside" type="List"/>
+            <parameter name="fromDate"/>
+        </in-parameters>
+    </service>
+
     <!-- service call to clock in/out from the navbar button -->
     <service verb="create" noun="NavTimeService">
         <in-parameters>
@@ -229,29 +245,5 @@
         </actions>
     </service>
 
-    <service verb="calculate" noun="testService" type="java" location="com.mk.moqui.TimeAndAttendanceServices" method="calculateBreakTime">
-        <in-parameters>
-            <parameter name="timeEntryInside"/>
-        </in-parameters>
-    </service>
-
-
-    <service verb="create" noun="test">
-        <in-parameters>
-            <parameter name="partyId"/>
-        </in-parameters>
-
-        <actions>
-            <log message=" \n\n\n\n testService \n\n\n\n " />
-        </actions>
-    </service>
-    
-
-    
-
-
-  
-
-    
 
 </services>

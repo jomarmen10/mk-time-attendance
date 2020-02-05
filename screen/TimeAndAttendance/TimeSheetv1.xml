@@ -47,14 +47,14 @@
                     <field-map field-name="fromDate" operator="equals" from="fromDate"/>
                     <econdition field-name="partyId"/>
                 </entity-find>
-
+                <!-- service call to calculate the total break time -->
+                <service-call name="TimeAndAttendanceServices.calculate#calculateBreakTime" in-map="context" out-map="context"/>
+                <!-- service call to calculate the largest break time -->
+                <service-call name="TimeAndAttendanceServices.calculate#calculateLongBreak" in-map="context" out-map="context"/>
                 <!-- service call to calculate the long shift -->
                 <service-call name="TimeAndAttendanceServices.calculate#checkForLongShift" in-map="[timeEntryInside:timeEntryInside, fromDate:fromDate, thruDate:thruDate]" out-map="context"/>
-                
                 <!-- service call to calculate how many time the user clock in/out -->
                 <service-call name="TimeAndAttendanceServices.calculate#numberOfClockin" in-map="[timeEntryInside:timeEntryInside, fromDate:fromDate]" out-map="context"/>
-
-                <service-call name="TimeAndAttendanceServices.calculate#testService" in-map="context" out-map="context"/>
 
             </row-actions>
 
@@ -63,7 +63,6 @@
                     <display/>
                 </default-field>
             </field>
-
 
             <field name="hours">
                 <default-field title="Total Time">
@@ -79,15 +78,15 @@
             </field>
 
 
-            <field name="name4">
-                <default-field title="Long Break">
+            <field name="calculateLongBreak">
+                <default-field title="Long Break" allow-empty="true">
                     <display />
                 </default-field>
             </field>
 
 
-            <field name="test">
-                <default-field title="Break Time">
+            <field name="calculateBreakTime">
+                <default-field title="Break Time" allow-empty="true">
                     <display />
                 </default-field>
             </field>
