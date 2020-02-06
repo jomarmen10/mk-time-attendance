@@ -8,6 +8,9 @@
 
     <transition name="submitTimeSheet"><service-call name="TimeAndAttendanceServices.update#submitTimeSheet" in-map="context"/>
         <default-response url="../TimeSheet"/></transition>
+    
+    <transition name="showPage"><default-response url="../ExelSheet"/></transition>
+
 
    
 
@@ -66,7 +69,9 @@
 
             <field name="fromDate">
                 <default-field title="Date">
-                    <display/>
+                    <!-- <display/> -->
+                    <link url="showPage" text="${fromDate}" link-type="anchor-button"/>
+
                 </default-field>
             </field>
 
@@ -114,3 +119,4 @@
     </widgets>
 
 </screen>
+

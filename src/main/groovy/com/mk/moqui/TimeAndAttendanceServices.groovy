@@ -233,9 +233,23 @@ public class TimeAndAttendanceServices {
         return totalHours
         
     }
-    
-    
 
-    
+    static Map dayOfTimeEntry(ExecutionContext ec) {
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        def timeEntry = ec.context.timeEntryList
+        def arraySize = ec.context.timeEntryList.size()
+        def fromDate = ec.context.fromDate
+        def newTimeEntry = []
+
+        for(int i = 0; i < arraySize; i++){
+            def dfFromDate = df.format(timeEntry[i].fromDate)
+            if(fromDate == dfFromDate){
+                newTimeEntry.push(timeEntry[i])
+            }
+        }
+        Map totalHours = ["newTimeEntry":newTimeEntry]
+        return totalHours
+    }
+
 }
 
