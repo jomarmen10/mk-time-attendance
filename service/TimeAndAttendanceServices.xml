@@ -212,13 +212,9 @@
             <if condition="openTimeEntry">
                 <then>
                     <service-call name="mantle.work.TimeServices.store#TimeEntry" in-map="context"/>
-                    <message type="warning" public="true">Clocked Out</message>
-
                 </then>
                 <else>
                     <service-call name="mantle.work.TimeServices.create#TimeEntryClockIn" in-map="context"/>
-                    <message type="warning" public="true">Clocked In</message>
-
                 </else>
             </if>
         </actions>
@@ -235,6 +231,28 @@
             <set field="statusId" value="TmshCompleted"/>
             <service-call name="update#mantle.work.time.Timesheet" in-map="context"/>
         </actions>
+    </service>
+
+<!-- fronend api service that output true or false if there is open time entry -->
+    <service verb="get" noun="CheckTimeEntry">
+        <out-parameters>
+            <parameter name="openTimeEntry"/>
+        </out-parameters>
+
+        <actions>
+            <set field="partyId" from="ec.user.userAccount.partyId"/>
+
+            <entity-find entity-name="mantle.work.time.TimeEntry" list="timeEntryList">
+                <econdition field-name="partyId"/>
+            </entity-find>
+
+            <filter-map-list list="timeEntryList" to-list="openTimeEntryList">
+                <field-map field-name="thruDate" from="null"/>
+            </filter-map-list>
+
+            <set field="openTimeEntry" from="openTimeEntryList ? true : false"/>
+        </actions>
+
     </service>
 
 

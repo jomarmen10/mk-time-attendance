@@ -5,7 +5,7 @@
 
         <!-- screen to adding a button in nav -->
         <screen location="component://webroot/screen/webroot.xml">
-            <subscreens-item name="button" menu-include="false" location="component://mk-time-attendance/screen/Button.xml"/>
+            <subscreens-item name="Button" menu-include="false" location="component://mk-time-attendance/screen/Button.xml"/>
         </screen>
 
         <screen location="component://webroot/screen/webroot/apps.xml">
