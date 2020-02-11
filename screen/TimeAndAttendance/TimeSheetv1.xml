@@ -5,6 +5,7 @@
 
     <parameter name="partyId" required="true"/>
     <parameter name="timesheetId" required="true"/>
+    <!-- <parameter name="isAdmin" type="Boolean"/> -->
 
     <transition name="submitTimeSheet"><service-call name="TimeAndAttendanceServices.update#submitTimeSheet" in-map="context"/>
         <default-response url="../TimeSheet"/></transition>
@@ -12,12 +13,16 @@
     <transition name="showPage"><default-response url="../ExelSheet"/></transition>
 
 
+    <always-actions>
+        <set field="isAdmin" from="ec.user.isInGroup('ADMIN')"/>
+    </always-actions>
+
    
 
     <actions>
         
         <entity-find entity-name="mantle.work.time.TimeEntry" list="timeEntryList">
-            <search-form-inputs default-order-by="-fromDate"/>
+            <!-- <search-form-inputs default-order-by="-fromDate"/> -->
             <econdition field-name="partyId"/>
         </entity-find>
 
@@ -38,84 +43,133 @@
 
     <widgets>
         <!-- <label type="h1" text="=================test====================="/>
-        <label type="h1" text="DayAndHours: ${DayAndHours.timeEntryId}"/>
+        <label type="h1" text="isAdmin: ${isAdmin}"/>
         <label type="h1" text="=================test====================="/> -->
 
-        <label type="h1" text="Pay Period: ${PeriodList[0].fromDate} to ${PeriodList[0].thruDate}"/>
-        <label type="h1" text="Employee: ${ec.user.userAccount.userFullName}"/>
-        <label type="h1" text="partyId: ${partyId}"/>
-        <label type="h1" text="partyId: ${timeSheetList.statusId}"/>
-        <link url="submitTimeSheet" text="Submit"/>
+        <container-row>
 
-        <!-- DayAndHours List is output of TimeAndAttendanceServices.calculate#DayAndHours -->
-         <form-list name="PersonalReport" list="DayAndHours" skip-form="true" header-dialog="true" saved-finds="true">
+            <row-col>
+                <label type="h1" text="Pay Period: ${PeriodList[0].fromDate} to ${PeriodList[0].thruDate}"/>
+                <label type="h1" text="Employee: ${ec.user.userAccount.userFullName}"/>
+                <label type="h1" text="partyId: ${partyId}"/>
+                <label type="h1" text="statusId: ${timeSheetList.statusId}"/>
+                <!-- <link url="submitTimeSheet" text="Change to Complete"/> -->
 
-            <row-actions>
+                <section condition="isAdmin">
+                    <!-- if the user is in the admin group this is what will load -->
+                    <widgets>
+                        <form-single name="TheForm" transition="submitTimeSheet">
+                            <field name="statusId">
+                                <default-field>
+                                    <drop-down allow-empty="true">
+                                        <option text="Approved" key="TmshApproved"/>
+                                        <option text="Completed" key="TmshCompleted"/>
+                                        <option text="In-Process" key="TmshInProcess"/>
+                                    </drop-down>
+                                </default-field>
+                            </field>
 
-                <entity-find entity-name="mantle.work.time.TimeEntry" list="timeEntryInside">
-                    <field-map field-name="fromDate" operator="equals" from="fromDate"/>
-                    <econdition field-name="partyId"/>
-                </entity-find>
-                <!-- service call to calculate the total break time -->
-                <service-call name="TimeAndAttendanceServices.calculate#calculateBreakTime" in-map="context" out-map="context"/>
-                <!-- service call to calculate the largest break time -->
-                <service-call name="TimeAndAttendanceServices.calculate#calculateLongBreak" in-map="context" out-map="context"/>
-                <!-- service call to calculate the long shift -->
-                <service-call name="TimeAndAttendanceServices.calculate#checkForLongShift" in-map="[timeEntryInside:timeEntryInside, fromDate:fromDate, thruDate:thruDate]" out-map="context"/>
-                <!-- service call to calculate how many time the user clock in/out -->
-                <service-call name="TimeAndAttendanceServices.calculate#numberOfClockin" in-map="[timeEntryInside:timeEntryInside, fromDate:fromDate]" out-map="context"/>
+                            <!-- define the current timesheedId to be use inside context in service call -->
+                            <field name="timesheetId">
+                                <default-field>
+                                    <hidden default-value="${timesheetId}"/>
+                                </default-field>
+                            </field>
 
-            </row-actions>
+                            <field name="submitButton">
+                                <default-field title="Submit">
+                                    <submit/>
+                                </default-field>
+                            </field>
+                        </form-single>
+                    </widgets>
+                    
+                    <!-- if the user is not in admin group this is the opotion that will load` -->
+                    <fail-widgets>
+                        <label type="h1" text="================not admin===================="/>
+                <link url="submitTimeSheet" text="Change to Complete"/>
+                        
+                    </fail-widgets>
 
-            <field name="fromDate">
-                <default-field title="Date">
-                    <!-- <display/> -->
-                    <link url="showPage" text="${fromDate}" link-type="anchor-button"/>
-
-                </default-field>
-            </field>
-
-            <field name="hours">
-                <default-field title="Total Time">
-                    <display format="0.00"/>
-                </default-field>
-            </field>
-
-            <!-- the checkForLongShift is output from TimeAndAttendanceServices.calculate#checkForLongShift -->
-            <field name="checkForLongShift">
-                <default-field title="Long Shifts">
-                    <display/>
-                </default-field>
-            </field>
-
-
-            <field name="calculateLongBreak">
-                <default-field title="Long Break" allow-empty="true">
-                    <display />
-                </default-field>
-            </field>
+                </section>
+                
+            </row-col>
 
 
-            <field name="calculateBreakTime">
-                <default-field title="Break Time" allow-empty="true">
-                    <display />
-                </default-field>
-            </field>
-            <!-- number of clock in is comming from TimeAndAttendanceServices.calculate#numberOfClockin service -->
-            <field name="numberOfClockin">
-                <default-field title="#Clock">
-                    <display />
+            <row-col>
+                <!-- DayAndHours List is output of TimeAndAttendanceServices.calculate#DayAndHours -->
+                <form-list name="PersonalReport" list="DayAndHours" skip-form="true" header-dialog="true" saved-finds="true">
 
-                </default-field>
-            </field>
+                    <row-actions>
 
-            <field name="comments">
-                <default-field title="Comments">
-                    <display/>
-                </default-field>
-            </field>
+                        <entity-find entity-name="mantle.work.time.TimeEntry" list="timeEntryInside">
+                            <field-map field-name="fromDate" operator="equals" from="fromDate"/>
+                            <econdition field-name="partyId"/>
+                        </entity-find>
+                        <!-- service call to calculate the total break time -->
+                        <service-call name="TimeAndAttendanceServices.calculate#calculateBreakTime" in-map="context" out-map="context"/>
+                        <!-- service call to calculate the largest break time -->
+                        <service-call name="TimeAndAttendanceServices.calculate#calculateLongBreak" in-map="context" out-map="context"/>
+                        <!-- service call to calculate the long shift -->
+                        <service-call name="TimeAndAttendanceServices.calculate#checkForLongShift" in-map="[timeEntryInside:timeEntryInside, fromDate:fromDate, thruDate:thruDate]" out-map="context"/>
+                        <!-- service call to calculate how many time the user clock in/out -->
+                        <service-call name="TimeAndAttendanceServices.calculate#numberOfClockin" in-map="[timeEntryInside:timeEntryInside, fromDate:fromDate]" out-map="context"/>
 
-        </form-list>
+                    </row-actions>
+
+                    <field name="fromDate">
+                        <default-field title="Date">
+                            <!-- <display/> -->
+                            <link url="showPage" text="${fromDate}" link-type="anchor-button"/>
+
+                        </default-field>
+                    </field>
+
+                    <field name="hours">
+                        <default-field title="Total Time">
+                            <display format="0.00"/>
+                        </default-field>
+                    </field>
+
+                    <!-- the checkForLongShift is output from TimeAndAttendanceServices.calculate#checkForLongShift -->
+                    <field name="checkForLongShift">
+                        <default-field title="Long Shifts">
+                            <display/>
+                        </default-field>
+                    </field>
+
+
+                    <field name="calculateLongBreak">
+                        <default-field title="Long Break" allow-empty="true">
+                            <display />
+                        </default-field>
+                    </field>
+
+
+                    <field name="calculateBreakTime">
+                        <default-field title="Break Time" allow-empty="true">
+                            <display />
+                        </default-field>
+                    </field>
+                    <!-- number of clock in is comming from TimeAndAttendanceServices.calculate#numberOfClockin service -->
+                    <field name="numberOfClockin">
+                        <default-field title="#Clock">
+                            <display />
+
+                        </default-field>
+                    </field>
+
+                    <field name="comments">
+                        <default-field title="Comments">
+                            <display/>
+                        </default-field>
+                    </field>
+
+                </form-list>
+            </row-col>
+
+        </container-row>
+
     </widgets>
 
 </screen>

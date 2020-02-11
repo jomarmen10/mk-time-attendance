@@ -106,7 +106,9 @@ public class TimeAndAttendanceServices {
             if(!newTimeEntry.fromDate.contains(timeEntry[i].fromDate)){
                 newTimeEntry.push(timeEntry[i])
             } else {
-                newTimeEntry[0].hours = newTimeEntry[0].hours + timeEntry[i].hours
+                timeEntry[i].hours = (timeEntry[i].hours ? timeEntry[i].hours : 0)
+
+                newTimeEntry[0].hours += timeEntry[i].hours
             }   
         }
 

@@ -225,10 +225,10 @@
         <in-parameters>
             <parameter name="partyId"/>
             <parameter name="timesheetId"/>
+            <parameter name="statusId"/>
         </in-parameters>
 
         <actions>
-            <set field="statusId" value="TmshCompleted"/>
             <service-call name="update#mantle.work.time.Timesheet" in-map="context"/>
         </actions>
     </service>

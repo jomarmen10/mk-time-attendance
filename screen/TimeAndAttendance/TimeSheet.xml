@@ -7,6 +7,7 @@
 
     <always-actions>
         <set field="partyId" from="ec.user.userAccount.partyId"/>
+        <set field="isAdmin" from="ec.user.isInGroup('ADMIN')"/>
     </always-actions>
 
     <actions>
