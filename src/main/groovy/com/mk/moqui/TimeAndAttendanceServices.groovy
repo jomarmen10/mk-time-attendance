@@ -100,14 +100,13 @@ public class TimeAndAttendanceServices {
         def dayArraySize = ec.context.timeEntryList.size()
         def timeEntry = ec.context.timeEntryList
         def newTimeEntry = []
-       
+
         for(int i = 0; i < dayArraySize; i++){
             timeEntry[i].fromDate = df.format(timeEntry[i].fromDate)
             if(!newTimeEntry.fromDate.contains(timeEntry[i].fromDate)){
+                timeEntry[i].hours = (timeEntry[i].hours ? timeEntry[i].hours : 0)
                 newTimeEntry.push(timeEntry[i])
             } else {
-                timeEntry[i].hours = (timeEntry[i].hours ? timeEntry[i].hours : 0)
-
                 newTimeEntry[0].hours += timeEntry[i].hours
             }   
         }

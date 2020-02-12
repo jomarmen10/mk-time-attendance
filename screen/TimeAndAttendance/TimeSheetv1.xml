@@ -12,6 +12,8 @@
     
     <transition name="showPage"><default-response url="../ExelSheet"/></transition>
 
+    <transition name="backPage"><default-response url="../TimeSheet"/></transition>
+
     <!-- transition that will create/download a csv format of the current form -->
     <transition name="ArtifactHitSummaryStats.csv">
         <default-response url=".">
@@ -54,6 +56,9 @@
         <!-- <label type="h1" text="=================test====================="/>
         <label type="h1" text="isAdmin: ${isAdmin}"/>
         <label type="h1" text="=================test====================="/> -->
+
+        <link url="backPage" text="Back"/>
+
 
         <label type="h4" text="Pay Period: ${PeriodList[0].fromDate} to ${PeriodList[0].thruDate}"/>
         <label type="h4" text="Employee: ${ec.user.userAccount.userFullName}"/>
