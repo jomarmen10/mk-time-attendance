@@ -225,7 +225,7 @@
         <in-parameters>
             <parameter name="partyId"/>
             <parameter name="timesheetId"/>
-            <parameter name="statusId"/>
+            <parameter name="statusId" default-value="TmshCompleted"/>
         </in-parameters>
 
         <actions>
@@ -251,6 +251,25 @@
             </filter-map-list>
 
             <set field="openTimeEntry" from="openTimeEntryList ? true : false"/>
+        </actions>
+
+    </service>
+
+    <service verb="update" noun="test">
+        <in-parameters>
+            <parameter name="partyId"/>
+            <parameter name="timesheetId"/>
+            <parameter name="statusId"/>
+            <parameter name="newStatusId"/>
+            <parameter name="testDrop"/>
+
+        </in-parameters>
+
+        <actions>
+            <log message="---------partyId----${partyId}--------------------------------" />
+            <log message="---------timesheetId----${timesheetId}-------------------------------" />
+            <log message="--------statusId-----${statusId}--------------------------------" />
+            <log message="---------newStatusId----${newStatusId}------------------------" />
         </actions>
 
     </service>

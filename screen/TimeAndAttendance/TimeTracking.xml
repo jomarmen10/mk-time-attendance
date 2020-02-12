@@ -190,7 +190,7 @@
 
         <!-- <label type="h1" text="===========test==========="/> -->
 
-        <form-list name="PersonalReport" list="timeEntryList" skip-form="true" header-dialog="true" saved-finds="true">
+        <form-list name="PersonalReport" list="timeEntryList" header-dialog="true">
 
             <field name="timeEntryId"><default-field title="ID (Click to Edit Entry)"><container-dialog id="EditTimeDialog" button-text="${timeEntryId}">
                     <form-single name="EditTimeForm" transition="editTimeEntry">

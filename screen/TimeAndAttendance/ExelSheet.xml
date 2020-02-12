@@ -12,6 +12,15 @@
     <transition name="editTimeEntry"><service-call name="TimeAndAttendanceServices.edit#TimeEntry" in-map="context"/>
         <default-response url="../TimeSheet" in-map="context"/></transition>
 
+    <!-- transition that will create/download a csv format of the current form -->
+    <transition name="ArtifactHitSummaryStats.csv">
+        <default-response url=".">
+        <parameter name="renderMode" value="csv"/>
+        <parameter name="pageNoLimit" value="true"/>
+        <parameter name="lastStandalone" value="true"/>
+        </default-response>
+    </transition>
+
     <actions>
         <entity-find entity-name="mantle.work.time.TimeEntry" list="timeEntryList">
             <econdition field-name="partyId"/>
@@ -23,6 +32,8 @@
 
 
     <widgets>
+        <!-- button that will call the transition to create the CSV -->
+        <link url="ArtifactHitSummaryStats.csv" text="Get as CSV" target-window="_blank" expand-transition-url="false"/>
 
         <!-- newTimeEntry List is output of TimeAndAttendanceServices.create#TestService -->
         <form-list name="PersonalReport" list="newTimeEntry" skip-form="true" header-dialog="true" saved-finds="true">

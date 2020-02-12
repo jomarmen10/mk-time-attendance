@@ -5,6 +5,18 @@
 
     <transition name="showPage"><default-response url="../TimeSheetv1"/></transition>
 
+    <transition name="testService"><service-call name="TimeAndAttendanceServices.update#test" in-map="context"/>
+        <default-response url="."/></transition>
+
+    <!-- transition that will create/download a csv format of the current form -->
+    <transition name="ArtifactHitSummaryStats.csv">
+        <default-response url=".">
+        <parameter name="renderMode" value="csv"/>
+        <parameter name="pageNoLimit" value="true"/>
+        <parameter name="lastStandalone" value="true"/>
+        </default-response>
+    </transition>
+
     <always-actions>
         <set field="partyId" from="ec.user.userAccount.partyId"/>
         <set field="isAdmin" from="ec.user.isInGroup('ADMIN')"/>
@@ -12,10 +24,24 @@
 
     <actions>
 
-        <entity-find entity-name="mantle.work.time.Timesheet" list="timeSheetList">
+        <if condition="isAdmin">
+            <then>
+                <entity-find entity-name="mantle.work.time.Timesheet" list="timeSheetList">
+                    <order-by field-name="-fromDate"/>
+                </entity-find>
+            </then>
+            <else>
+                <entity-find entity-name="mantle.work.time.Timesheet" list="timeSheetList">
+                    <order-by field-name="-fromDate"/>
+                    <econdition field-name="partyId"/>
+                </entity-find>
+            </else>
+        </if>
+
+        <!-- <entity-find entity-name="mantle.work.time.Timesheet" list="timeSheetList">
             <order-by field-name="-fromDate"/>
             <econdition field-name="partyId"/>
-        </entity-find>
+        </entity-find> -->
 
         <filter-map-list list="timeSheet" to-list="openTimeSheetList">
             <field-map field-name="thruDate" from="null"/>
@@ -27,17 +53,31 @@
             <econdition field-name="partyId"/>
         </entity-find>
 
+        <!-- ///////////////////// -->
+
+        <set field="opOptions" from="['TmshInProcess', 'TmshCompleted', 'TmshApproved']"/>
+
+        <entity-find entity-name="moqui.basic.StatusItem" list="statusList">
+            <econdition field-name="statusTypeId" operator="equals" value="Timesheet"/>
+            <!-- <econdition field-name="workEffortTypeEnumId" value="WetProject"/> -->
+            <!-- <field-map field-name="statusTypeId" operator="equals" value="Timesheet"/> -->
+
+        </entity-find>
+        <!-- ///////////////////// -->
+
     </actions>
 
 
 
     <widgets>
+        <!-- button that will call the transition to create the CSV -->
+        <link url="ArtifactHitSummaryStats.csv" text="Get as CSV" target-window="_blank" expand-transition-url="false"/>
 
         <!-- <label type="h1" text="===========test==========="/> -->
-        <!-- <label type="h1" text="TimeSheet ${timeSheetList}"/> -->
+        <!-- <label type="h1" text="TimeSheet ${statusList.statusTypeId}"/> -->
         <!-- <label type="h1" text="===========test==========="/> -->
 
-        <form-list name="PersonalReport" list="timeSheetList" skip-form="true" header-dialog="true" saved-finds="true">
+        <form-list name="PersonalReport" list="timeSheetList" header-dialog="true" transition="testService"> 
 
         <!-- setup an action for every row -->
             <row-actions>
@@ -109,11 +149,42 @@
                 </default-field>
             </field>
 
-            <field name="statusId">
+            <!-- <field name="statusId">
                 <default-field title="Status">
                     <display/>
                 </default-field>
+            </field> -->
+
+            <field name="newStatusId">
+                <default-field title="statusId">
+                    <drop-down no-current-selected-key="${statusId}" allow-empty="true">
+                        <list-options list="statusList" key="${statusId}" text="${description}"/>
+                    </drop-down>
+                     <link url="testService" icon="glyphicon glyphicon-edit"
+                    parameter-map="[partyId:partyId, newStatusId:newStatusId]"
+                    confirmation="Are you sure you want to Update this TimeSheet?"/>
+                </default-field>
             </field>
+
+            <!-- <field name="testService"><default-field title="Update"><submit/></default-field></field> -->
+
+
+             <!-- <field name="statusId">
+                <default-field title="statusId">
+                    <drop-down allow-empty="true" name="test">
+                        <entity-options name="statusIdtest" key="${statusId}" text="${description}">
+                            <entity-find entity-name="moqui.basic.StatusItem">
+                                <econdition field-name="statusTypeId" operator="equals" value="Timesheet"/>
+                            </entity-find>
+                        </entity-options>
+                    </drop-down>
+                    <link url="test" icon="glyphicon glyphicon-pencil"
+                    parameter-map="[partyId:partyId, statusId:test, timesheetId:timesheetId]"
+                    confirmation="Are you sure you want to Update this TimeSheet?"/>
+                </default-field>
+            </field> -->
+
+
 
         </form-list>
 
