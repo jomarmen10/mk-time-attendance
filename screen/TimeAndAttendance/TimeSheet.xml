@@ -61,7 +61,6 @@
             <econdition field-name="statusTypeId" operator="equals" value="Timesheet"/>
             <!-- <econdition field-name="workEffortTypeEnumId" value="WetProject"/> -->
             <!-- <field-map field-name="statusTypeId" operator="equals" value="Timesheet"/> -->
-
         </entity-find>
         <!-- ///////////////////// -->
 
@@ -155,15 +154,21 @@
                 </default-field>
             </field>
 
-             <field name="statusId">
-                <default-field title="statusId">
-                    <drop-down allow-empty="true" name="test">
+            <!-- This field is using conditional-field a checking condition that can be use in field -->
+            <!-- <field name="statusId" from="timeSheetStatus.description"> -->
+            <field name="statusId">
+                <conditional-field condition="isAdmin" title="Status ID">
+                    <drop-down allow-empty="true">
                         <entity-options name="statusIdtest" key="${statusId}" text="${description}">
                             <entity-find entity-name="moqui.basic.StatusItem">
                                 <econdition field-name="statusTypeId" operator="equals" value="Timesheet"/>
                             </entity-find>
                         </entity-options>
                     </drop-down>
+                </conditional-field>
+                
+                <default-field>
+                    <display-entity entity-name="moqui.basic.StatusItem" key-field-name="statusId" text="${description}"/>
                 </default-field>
             </field>
 

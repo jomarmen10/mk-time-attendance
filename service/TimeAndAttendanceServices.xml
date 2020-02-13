@@ -242,8 +242,7 @@
         </in-parameters>
 
         <actions>
-            <log message="=========partyId==${partyId}===================="/>
-            <!-- <service-call name="update#mantle.work.time.Timesheet" in-map="context"/> -->
+            <service-call name="update#mantle.work.time.Timesheet" in-map="context"/>
         </actions>
     </service>
 

@@ -51,22 +51,26 @@
             <econdition field-name="timesheetId"/>
         </entity-find>
 
+        <!-- Use entity find one to get the description of statusId base on timeSheetList.statusId  -->
+        <entity-find-one entity-name="moqui.basic.StatusItem" value-field="timeSheetStatus">
+            <field-map field-name="statusId" operator="equals" from="timeSheetList.statusId"/>
+        </entity-find-one>
+
         <service-call name="TimeAndAttendanceServices.calculate#DayAndHours" in-map="context" out-map="context"/>
 
     </actions>
 
     <widgets>
         <!-- <label type="h1" text="=================test====================="/>
-        <label type="h1" text="isAdmin: ${isAdmin}"/>
+        <label type="h1" text="isAdmin: ${timeSheetList}"/>
         <label type="h1" text="=================test====================="/> -->
 
-        <link url="backPage" text="Back"/>
 
 
         <label type="h4" text="Pay Period: ${PeriodList[0].fromDate} to ${PeriodList[0].thruDate}"/>
         <label type="h4" text="Employee: ${firstName} ${lastName}"/>
         <label type="h4" text="partyId: ${partyId}"/>
-        <label type="h4" text="statusId: ${timeSheetList.statusId}"/>
+        <label type="h4" text="statusId: ${timeSheetStatus.description}"/>
         <!-- <link url="submitTimeSheet" text="Change to Complete"/> -->
 
         <section condition="isAdmin">
@@ -107,7 +111,7 @@
 
         </section>
     
-
+        <link url="backPage" text="Back"/>
 
         <!-- button that will call the transition to create the CSV -->
         <link url="ArtifactHitSummaryStats.csv" text="CSV" target-window="_blank" expand-transition-url="false"/>
@@ -176,6 +180,12 @@
 
             <field name="comments">
                 <default-field title="Comments">
+                    <display/>
+                </default-field>
+            </field>
+
+            <field name="test">
+                <default-field title="test">
                     <display/>
                 </default-field>
             </field>
