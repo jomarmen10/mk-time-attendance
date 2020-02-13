@@ -8,7 +8,7 @@
     <parameter name="firstName"/>
     <parameter name="lastName"/>
 
-    <transition name="submitTimeSheet"><service-call name="TimeAndAttendanceServices.update#submitTimeSheet" in-map="context"/>
+    <transition name="submitTimeSheet"><service-call name="TimeAndAttendanceServices.update#TimeSheetStatus" in-map="context"/>
         <default-response url="../TimeSheet"/></transition>
     
     <transition name="showPage"><default-response url="../ExelSheet"/></transition>
@@ -65,8 +65,6 @@
         <label type="h1" text="isAdmin: ${timeSheetList}"/>
         <label type="h1" text="=================test====================="/> -->
 
-
-
         <label type="h4" text="Pay Period: ${PeriodList[0].fromDate} to ${PeriodList[0].thruDate}"/>
         <label type="h4" text="Employee: ${firstName} ${lastName}"/>
         <label type="h4" text="partyId: ${partyId}"/>
@@ -79,7 +77,7 @@
                 <form-single name="TheForm" transition="submitTimeSheet">
                     <field name="statusId">
                         <default-field>
-                            <drop-down allow-empty="true">
+                            <drop-down>
                                 <option text="Approved" key="TmshApproved"/>
                                 <option text="Completed" key="TmshCompleted"/>
                                 <option text="In-Process" key="TmshInProcess"/>
@@ -104,9 +102,7 @@
             
             <!-- if the user is not in admin group this is the opotion that will load` -->
             <fail-widgets>
-                <label type="h1" text="================not admin===================="/>
-                <link url="submitTimeSheet" text="Change to Complete"/>
-                
+                <link url="submitTimeSheet" text="Complete"/>
             </fail-widgets>
 
         </section>

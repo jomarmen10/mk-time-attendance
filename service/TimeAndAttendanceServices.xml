@@ -220,29 +220,28 @@
         </actions>
     </service>
 
-    <!-- service call to submit the time sheet and change the statusId to complete -->
-    <service verb="update" noun="submitTimeSheet">
-        <in-parameters>
-            <parameter name="partyId"/>
-            <parameter name="timesheetId"/>
-            <parameter name="statusId" default-value="TmshCompleted"/>
-        </in-parameters>
-
-        <actions>
-            <service-call name="update#mantle.work.time.Timesheet" in-map="context"/>
-        </actions>
-    </service>
-
     <!-- service call to update timesheet status -->
     <service verb="update" noun="TimeSheetStatus">
         <in-parameters>
-            <parameter name="partyId"/>
             <parameter name="timesheetId"/>
             <parameter name="statusId"/>
+            <parameter name="isAdmin" type="boolean"/>
         </in-parameters>
 
         <actions>
-            <service-call name="update#mantle.work.time.Timesheet" in-map="context"/>
+            <set field="newStatusId" from="statusId"/>
+            <if condition="isAdmin">
+                <then>
+                    <set field="statusId" from="null"/>
+                    <service-call name="update#mantle.work.time.Timesheet" in-map="context"/>
+                    <set field="statusId" from="newStatusId"/>
+                    <service-call name="update#mantle.work.time.Timesheet" in-map="context"/>
+                </then>
+                <else>
+                    <set field="statusId" value="TmshCompleted"/>
+                    <service-call name="update#mantle.work.time.Timesheet" in-map="context"/>
+                </else>
+            </if>
         </actions>
     </service>
 
@@ -268,16 +267,13 @@
 
     </service>
 
-<!-- service call to update timesheet status -->
-    <service verb="update" noun="TimeSheetStatus">
+    <service verb="update" noun="test">
         <in-parameters>
-            <parameter name="partyId"/>
-            <parameter name="timesheetId"/>
-            <parameter name="statusId"/>
         </in-parameters>
 
         <actions>
-            <service-call name="update#mantle.work.time.Timesheet" in-map="context"/>
+            <log message="=============${partyId}==================="/>
+            <log message="=============hello==================="/>
         </actions>
     </service>
 

@@ -158,7 +158,7 @@
             <!-- <field name="statusId" from="timeSheetStatus.description"> -->
             <field name="statusId">
                 <conditional-field condition="isAdmin" title="Status ID">
-                    <drop-down allow-empty="true">
+                    <drop-down allow-empty="false">
                         <entity-options name="statusIdtest" key="${statusId}" text="${description}">
                             <entity-find entity-name="moqui.basic.StatusItem">
                                 <econdition field-name="statusTypeId" operator="equals" value="Timesheet"/>
@@ -174,7 +174,7 @@
 
             <!-- this field will call the transition of the form -->
             <field name="transitionCall">
-                <default-field title="Update">
+                <default-field title="Submit">
                     <submit confirmation="Are you sure you want to Update this TimeSheet?" />
                 </default-field>
             </field>
