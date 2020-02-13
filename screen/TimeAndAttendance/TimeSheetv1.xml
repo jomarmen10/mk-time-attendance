@@ -9,7 +9,7 @@
     <parameter name="lastName"/>
 
     <transition name="submitTimeSheet"><service-call name="TimeAndAttendanceServices.update#TimeSheetStatus" in-map="context"/>
-        <default-response url="../TimeSheet"/></transition>
+        <default-response url="."/></transition>
     
     <transition name="showPage"><default-response url="../ExelSheet"/></transition>
 
@@ -77,10 +77,12 @@
                 <form-single name="TheForm" transition="submitTimeSheet">
                     <field name="statusId">
                         <default-field>
-                            <drop-down>
-                                <option text="Approved" key="TmshApproved"/>
-                                <option text="Completed" key="TmshCompleted"/>
-                                <option text="In-Process" key="TmshInProcess"/>
+                             <drop-down allow-empty="false">
+                                <entity-options name="statusIdtest" key="${statusId}" text="${description}">
+                                    <entity-find entity-name="moqui.basic.StatusItem">
+                                        <econdition field-name="statusTypeId" operator="equals" value="Timesheet"/>
+                                    </entity-find>
+                                </entity-options>
                             </drop-down>
                         </default-field>
                     </field>
@@ -89,6 +91,25 @@
                     <field name="timesheetId">
                         <default-field>
                             <hidden default-value="${timesheetId}"/>
+                        </default-field>
+                    </field>
+
+                    <!-- have to add the partyIdRow, firstName and lastName so that the page would know which person to load after the service call -->
+                    <field name="partyIdRow">
+                        <default-field>
+                            <hidden default-value="${partyIdRow}"/>
+                        </default-field>
+                    </field>
+
+                    <field name="firstName">
+                        <default-field>
+                            <hidden default-value="${firstName}"/>
+                        </default-field>
+                    </field>
+
+                    <field name="lastName">
+                        <default-field>
+                            <hidden default-value="${lastName}"/>
                         </default-field>
                     </field>
 
@@ -132,7 +153,7 @@
 
             </row-actions>
 
-            <field name="fromDate">
+            <field name="fromDateRow" from="fromDate">
                 <default-field title="Date">
                     <!-- <display/> -->
                     <link url="showPage" text="${fromDate}" link-type="anchor-button"/>

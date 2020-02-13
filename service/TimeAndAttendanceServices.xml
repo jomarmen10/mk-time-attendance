@@ -57,16 +57,24 @@
      <service verb="edit" noun="TimeEntry">
         <in-parameters>
             <parameter name="timeEntryId" required="true"/>
+            <parameter name="partyIdRow"/>
+            <parameter name="partyId"/>
+            <parameter name="fromDateRow"/>
             <parameter name="fromDate"/>
             <parameter name="thruDate"/>
             <parameter name="comments"/>
-            <parameter name="partyId"/>
-            <parameter name="workTypeEnumId"/>
             <parameter name="timesheetId"/>
 
         </in-parameters>
 
+        <out-parameters>
+            <parameter name="timesheetId"/>
+            <parameter name="fromDateRow"/>
+        </out-parameters>
+
         <actions>
+            <set field="partyId" from="partyIdRow" />
+            
             <if condition="thruDate &gt; fromDate">
                 <script>
                     EntityValue queryForTimeEntry = ec.entity.find("mantle.work.time.TimeEntry").condition( [ "timeEntryId" : timeEntryId, "partyId" : partyId ] ).one()
@@ -77,9 +85,6 @@
                     </if>
                     <if condition="!thruDate">
                         <set field="thruDate" from="queryForTimeEntry.thruDate"/>
-                    </if>
-                    <if condition="!workTypeEnumId">
-                        <set field="workTypeEnumId" from="queryForTimeEntry.workTypeEnumId"/>
                     </if>
                     <if condition="!timesheetId">
                         <set field="timesheetId" from="queryForTimeEntry.timesheetId"/>
