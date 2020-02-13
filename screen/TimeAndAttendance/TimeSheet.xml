@@ -3,9 +3,9 @@
 <screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://moqui.org/xsd/xml-screen-2.1.xsd"
         require-authentication="anonymous-all" default-menu-title="Time Sheet" default-menu-index="2">
 
-    <transition name="showPage"><default-response url="../TimeSheetv1"/></transition>
+    <transition name="showPage"><default-response url="../TimeSheetv1" in-map="context"/></transition>
 
-    <transition name="testService"><service-call name="TimeAndAttendanceServices.update#test" in-map="context"/>
+    <transition name="updateTimeSheetStatus"><service-call name="TimeAndAttendanceServices.update#TimeSheetStatus" in-map="context"/>
         <default-response url="."/></transition>
 
     <!-- transition that will create/download a csv format of the current form -->
@@ -18,7 +18,7 @@
     </transition>
 
     <always-actions>
-        <set field="partyId" from="ec.user.userAccount.partyId"/>
+        <!-- <set field="partyId" from="ec.user.userAccount.partyId"/> -->
         <set field="isAdmin" from="ec.user.isInGroup('ADMIN')"/>
     </always-actions>
 
@@ -71,13 +71,13 @@
 
     <widgets>
         <!-- button that will call the transition to create the CSV -->
-        <link url="ArtifactHitSummaryStats.csv" text="Get as CSV" target-window="_blank" expand-transition-url="false"/>
+        <link url="ArtifactHitSummaryStats.csv" text="CSV" target-window="_blank" expand-transition-url="false"/>
 
         <!-- <label type="h1" text="===========test==========="/> -->
         <!-- <label type="h1" text="TimeSheet ${statusList.statusTypeId}"/> -->
         <!-- <label type="h1" text="===========test==========="/> -->
 
-        <form-list name="PersonalReport" list="timeSheetList" header-dialog="true" transition="testService"> 
+        <form-list name="PersonalReport" list="timeSheetList" header-dialog="true" transition="updateTimeSheetStatus"> 
 
         <!-- setup an action for every row -->
             <row-actions>
@@ -94,17 +94,23 @@
                 <set field="totalWeeklyHours" from="sumOfHours"/>
             </row-actions>
 
-            <!-- <link url="clockInTimeEntry" text="Clock in"/> -->
-
-             <field name="timesheetId">
+            <!-- timesheet Id that the user will see -->
+             <field name="timesheetIdShow">
                 <default-field title="Timesheet ID">
                     <!-- <display/> -->
-                    <link url="showPage" text="${timesheetId}" link-type="anchor-button"/>
+                    <link url="showPage" text="${timesheetId}" from="timesheeId" link-type="anchor-button"/>
+                </default-field>
+            </field>
+
+            <!-- timesheetId that the service will if update is called -->
+            <field name="timesheetId">
+                <default-field>
+                    <hidden default-value="${timesheetId}"/>
                 </default-field>
             </field>
 
             <!-- partyId -->
-            <field name="partyId">
+            <field name="partyIdRow" from="partyId">
                 <default-field title="Party ID">
                     <display/>
                 </default-field>
@@ -149,27 +155,7 @@
                 </default-field>
             </field>
 
-            <!-- <field name="statusId">
-                <default-field title="Status">
-                    <display/>
-                </default-field>
-            </field> -->
-
-            <field name="newStatusId">
-                <default-field title="statusId">
-                    <drop-down no-current-selected-key="${statusId}" allow-empty="true">
-                        <list-options list="statusList" key="${statusId}" text="${description}"/>
-                    </drop-down>
-                     <link url="testService" icon="glyphicon glyphicon-edit"
-                    parameter-map="[partyId:partyId, newStatusId:newStatusId]"
-                    confirmation="Are you sure you want to Update this TimeSheet?"/>
-                </default-field>
-            </field>
-
-            <!-- <field name="testService"><default-field title="Update"><submit/></default-field></field> -->
-
-
-             <!-- <field name="statusId">
+             <field name="statusId">
                 <default-field title="statusId">
                     <drop-down allow-empty="true" name="test">
                         <entity-options name="statusIdtest" key="${statusId}" text="${description}">
@@ -178,11 +164,15 @@
                             </entity-find>
                         </entity-options>
                     </drop-down>
-                    <link url="test" icon="glyphicon glyphicon-pencil"
-                    parameter-map="[partyId:partyId, statusId:test, timesheetId:timesheetId]"
-                    confirmation="Are you sure you want to Update this TimeSheet?"/>
                 </default-field>
-            </field> -->
+            </field>
+
+            <!-- this field will call the transition of the form -->
+            <field name="transitionCall">
+                <default-field title="Update">
+                    <submit confirmation="Are you sure you want to Update this TimeSheet?" />
+                </default-field>
+            </field>
 
 
 

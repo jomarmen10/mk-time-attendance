@@ -4,9 +4,11 @@
         require-authentication="anonymous-all" >
 
         <!-- parameters from the previous page -->
-    <parameter name="partyId" required="true"/>
+    <parameter name="partyIdRow" required="true"/>
     <parameter name="timesheetId" required="true"/>
-    <parameter name="fromDate" required="false"/>
+    <parameter name="fromDate"/>
+    <parameter name="firstName"/>
+    <parameter name="lastName"/>
 
 
     <transition name="editTimeEntry"><service-call name="TimeAndAttendanceServices.edit#TimeEntry" in-map="context"/>
@@ -25,6 +27,8 @@
     </transition>
 
     <actions>
+        <set field="partyId" from="partyIdRow" />
+
         <entity-find entity-name="mantle.work.time.TimeEntry" list="timeEntryList">
             <econdition field-name="partyId"/>
         </entity-find>
@@ -39,7 +43,7 @@
         <link url="backPage" text="Back"/>
 
         <!-- button that will call the transition to create the CSV -->
-        <link url="ArtifactHitSummaryStats.csv" text="Get as CSV" target-window="_blank" expand-transition-url="false"/>
+        <link url="ArtifactHitSummaryStats.csv" text="CSV" target-window="_blank" expand-transition-url="false"/>
 
         <!-- newTimeEntry List is output of TimeAndAttendanceServices.create#TestService -->
         <form-list name="PersonalReport" list="newTimeEntry" skip-form="true" header-dialog="true" saved-finds="true">

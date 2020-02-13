@@ -2,10 +2,11 @@
 
 <screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://moqui.org/xsd/xml-screen-2.1.xsd" require-authentication="anonymous-all" default-menu-title="Time Sheet v1" default-menu-index="3">
 
-
-    <parameter name="partyId" required="true"/>
+    <!-- named it different from partyId because partyId is defaulting into the current login user and not the one from timesheed click -->
+    <parameter name="partyIdRow" required="true"/>
     <parameter name="timesheetId" required="true"/>
-    <!-- <parameter name="isAdmin" type="Boolean"/> -->
+    <parameter name="firstName"/>
+    <parameter name="lastName"/>
 
     <transition name="submitTimeSheet"><service-call name="TimeAndAttendanceServices.update#submitTimeSheet" in-map="context"/>
         <default-response url="../TimeSheet"/></transition>
@@ -31,7 +32,9 @@
    
 
     <actions>
-        
+        <!-- setting back partyIdRow to partyId for simplicity -->
+        <set field="partyId" from="partyIdRow" />
+
         <entity-find entity-name="mantle.work.time.TimeEntry" list="timeEntryList">
             <search-form-inputs default-order-by="-fromDate"/>
             <econdition field-name="partyId"/>
@@ -61,7 +64,7 @@
 
 
         <label type="h4" text="Pay Period: ${PeriodList[0].fromDate} to ${PeriodList[0].thruDate}"/>
-        <label type="h4" text="Employee: ${ec.user.userAccount.userFullName}"/>
+        <label type="h4" text="Employee: ${firstName} ${lastName}"/>
         <label type="h4" text="partyId: ${partyId}"/>
         <label type="h4" text="statusId: ${timeSheetList.statusId}"/>
         <!-- <link url="submitTimeSheet" text="Change to Complete"/> -->
@@ -107,7 +110,7 @@
 
 
         <!-- button that will call the transition to create the CSV -->
-        <link url="ArtifactHitSummaryStats.csv" text="Get as CSV" target-window="_blank" expand-transition-url="false"/>
+        <link url="ArtifactHitSummaryStats.csv" text="CSV" target-window="_blank" expand-transition-url="false"/>
 
         <!-- DayAndHours List is output of TimeAndAttendanceServices.calculate#DayAndHours -->
         <form-list name="PersonalReport" list="DayAndHours" header-dialog="true">

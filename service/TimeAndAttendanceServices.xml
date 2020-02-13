@@ -233,7 +233,21 @@
         </actions>
     </service>
 
-<!-- fronend api service that output true or false if there is open time entry -->
+    <!-- service call to update timesheet status -->
+    <service verb="update" noun="TimeSheetStatus">
+        <in-parameters>
+            <parameter name="partyId"/>
+            <parameter name="timesheetId"/>
+            <parameter name="statusId"/>
+        </in-parameters>
+
+        <actions>
+            <log message="=========partyId==${partyId}===================="/>
+            <!-- <service-call name="update#mantle.work.time.Timesheet" in-map="context"/> -->
+        </actions>
+    </service>
+
+<!-- frontend api service that output true or false if there is open time entry -->
     <service verb="get" noun="CheckTimeEntry">
         <out-parameters>
             <parameter name="openTimeEntry"/>
@@ -255,23 +269,17 @@
 
     </service>
 
-    <service verb="update" noun="test">
+<!-- service call to update timesheet status -->
+    <service verb="update" noun="TimeSheetStatus">
         <in-parameters>
             <parameter name="partyId"/>
             <parameter name="timesheetId"/>
             <parameter name="statusId"/>
-            <parameter name="newStatusId"/>
-            <parameter name="testDrop"/>
-
         </in-parameters>
 
         <actions>
-            <log message="---------partyId----${partyId}--------------------------------" />
-            <log message="---------timesheetId----${timesheetId}-------------------------------" />
-            <log message="--------statusId-----${statusId}--------------------------------" />
-            <log message="---------newStatusId----${newStatusId}------------------------" />
+            <service-call name="update#mantle.work.time.Timesheet" in-map="context"/>
         </actions>
-
     </service>
 
 

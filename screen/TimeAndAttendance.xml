@@ -6,9 +6,9 @@
 
     <subscreens default-item="TimeSheet"/>
 
-    <always-actions>
+    <pre-actions>
         <set field="partyId" from="ec.user.userAccount.partyId"/>
-    </always-actions>
+    </pre-actions>
 
     <transition name="clockInTimeEntry"><service-call name="TimeAndAttendanceServices.create#NavTimeService" in-map="context"/>
         <default-response url="."/></transition>
