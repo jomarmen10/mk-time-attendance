@@ -11,6 +11,7 @@
     <parameter name="firstName"/>
     <parameter name="lastName"/>
     <parameter name="statusId"/>
+    <parameter name="isAdmin"/>
 
 
 
@@ -42,9 +43,11 @@
 
 
     <widgets>
-        <!-- <label type="h1" text="=================test====================="/>
-        <label type="h1" text="fromDateRow: ${statusId}"/>
-        <label type="h1" text="=================test====================="/> -->
+        <label type="h1" text="=================test====================="/>
+        <label type="h1" text="isAdmin: ${isAdmin}"/>
+        <label type="h1" text="statusId: ${statusId}"/>
+
+        <label type="h1" text="=================test====================="/>
 
 
         <link url="backPage" text="Back"/>
@@ -56,7 +59,7 @@
         <form-list name="PersonalReport" list="newTimeEntry" skip-form="true" header-dialog="true" saved-finds="true">
 
             <field name="timeEntryId">
-                <conditional-field condition="(statusId == 'TmshInProcess')" title="ID (Click to Edit Entry)">
+                <conditional-field condition="(statusId == 'TmshInProcess' || isAdmin == 'true')" title="ID (Click to Edit Entry)">
                     <container-dialog id="EditTimeDialog" button-text="${timeEntryId}">
                     <form-single name="EditTimeForm" transition="editTimeEntry">
                         <field name="partyId"><default-field><hidden/></default-field></field>

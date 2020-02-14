@@ -189,6 +189,10 @@ public class TimeAndAttendanceServices {
 
         }
 
+        if(result < 0){
+            result = 0
+        }
+    
         DecimalFormat df2 = new DecimalFormat("###.##")
         Map totalHours = ["calculateBreakTime":df2.format(result / 60)]
         return totalHours

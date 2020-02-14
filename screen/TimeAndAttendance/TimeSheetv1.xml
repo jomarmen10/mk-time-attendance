@@ -61,9 +61,9 @@
     </actions>
 
     <widgets>
-        <!-- <label type="h1" text="=================test====================="/>
+        <label type="h1" text="=================test====================="/>
         <label type="h1" text="isAdmin: ${statusId}"/>
-        <label type="h1" text="=================test====================="/> -->
+        <label type="h1" text="=================test====================="/>
 
         <label type="h4" text="Pay Period: ${PeriodList[0].fromDate} to ${PeriodList[0].thruDate}"/>
         <label type="h4" text="Employee: ${firstName} ${lastName}"/>
@@ -197,12 +197,6 @@
 
             <field name="comments">
                 <default-field title="Comments">
-                    <display/>
-                </default-field>
-            </field>
-
-            <field name="test">
-                <default-field title="test">
                     <display/>
                 </default-field>
             </field>
