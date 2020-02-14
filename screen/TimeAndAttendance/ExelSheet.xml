@@ -15,7 +15,7 @@
     <transition name="editTimeEntry"><service-call name="TimeAndAttendanceServices.edit#TimeEntry" in-map="context" out-map="context"/>
         <default-response url="."/></transition>
 
-    <transition name="backPage"><default-response url="../TimeSheetv1"/></transition>
+    <transition name="backPage"><default-response url="../TimeSheetv1" in-map="context"/></transition>
     
 
     <!-- transition that will create/download a csv format of the current form -->
@@ -63,7 +63,9 @@
                         <field name="submitButton"><default-field title="Edit Time Entry"><submit/></default-field></field>
                         <!-- this two parameters are needed in the service call to load back the page after edit -->
                         <field name="partyIdRow"><default-field><hidden default-value="${partyIdRow}"/></default-field></field>
-                        <field name="fromDateRow"><default-field><hidden default-value="${fromDateRow}"/></default-field></field></form-single>
+                        <field name="fromDateRow"><default-field><hidden default-value="${fromDateRow}"/></default-field></field>
+                        <field name="timesheetId"><default-field><hidden default-value="${timesheetId}"/></default-field></field>
+                    </form-single>
                 </container-dialog></default-field></field>
 
             <!-- partyId -->

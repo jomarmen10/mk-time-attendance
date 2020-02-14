@@ -77,15 +77,9 @@
             
             <if condition="thruDate &gt; fromDate">
                 <script>
-                    EntityValue queryForTimeEntry = ec.entity.find("mantle.work.time.TimeEntry").condition( [ "timeEntryId" : timeEntryId, "partyId" : partyId ] ).one()
+                    EntityValue queryForTimeEntry = ec.entity.find("mantle.work.time.TimeEntry").condition( [ "timeEntryId" : timeEntryId, "partyId" : partyId, "timesheetId": timesheetId ] ).one()
                 </script>
                 <if condition="queryForTimeEntry">
-                    <if condition="!fromDate">
-                        <set field="fromDate" from="queryForTimeEntry.fromDate"/>
-                    </if>
-                    <if condition="!thruDate">
-                        <set field="thruDate" from="queryForTimeEntry.thruDate"/>
-                    </if>
                     <if condition="!timesheetId">
                         <set field="timesheetId" from="queryForTimeEntry.timesheetId"/>
                     </if>
@@ -94,7 +88,7 @@
                     <else><message type="warning">That time entry does not exist for you.</message></else>
                 </if>
                 <else>
-                    <message>Clock-out time should be later than clock-in time</message>
+                    <message type="warning">Clock-out time should be later than clock-in time</message>
                 </else>
             </if>
         </actions>
