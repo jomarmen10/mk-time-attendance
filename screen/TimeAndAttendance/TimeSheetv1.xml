@@ -6,7 +6,7 @@
     <parameter name="partyIdRow" required="true"/>
     <parameter name="timesheetId" required="true"/>
     <parameter name="firstName"/>
-    <parameter name="lastName"/>
+    <parameter name="statusId"/>
 
     <transition name="submitTimeSheet"><service-call name="TimeAndAttendanceServices.update#TimeSheetStatus" in-map="context"/>
         <default-response url="."/></transition>
@@ -62,7 +62,7 @@
 
     <widgets>
         <!-- <label type="h1" text="=================test====================="/>
-        <label type="h1" text="isAdmin: ${timeSheetList}"/>
+        <label type="h1" text="isAdmin: ${statusId}"/>
         <label type="h1" text="=================test====================="/> -->
 
         <label type="h4" text="Pay Period: ${PeriodList[0].fromDate} to ${PeriodList[0].thruDate}"/>

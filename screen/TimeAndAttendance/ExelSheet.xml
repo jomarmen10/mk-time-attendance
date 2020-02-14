@@ -10,6 +10,8 @@
     <parameter name="fromDateRow"/>
     <parameter name="firstName"/>
     <parameter name="lastName"/>
+    <parameter name="statusId"/>
+
 
 
     <transition name="editTimeEntry"><service-call name="TimeAndAttendanceServices.edit#TimeEntry" in-map="context" out-map="context"/>
@@ -41,7 +43,7 @@
 
     <widgets>
         <!-- <label type="h1" text="=================test====================="/>
-        <label type="h1" text="fromDateRow: ${fromDateRow}"/>
+        <label type="h1" text="fromDateRow: ${statusId}"/>
         <label type="h1" text="=================test====================="/> -->
 
 
@@ -53,7 +55,9 @@
         <!-- newTimeEntry List is output of TimeAndAttendanceServices.create#TestService -->
         <form-list name="PersonalReport" list="newTimeEntry" skip-form="true" header-dialog="true" saved-finds="true">
 
-            <field name="timeEntryId"><default-field title="ID (Click to Edit Entry)"><container-dialog id="EditTimeDialog" button-text="${timeEntryId}">
+            <field name="timeEntryId">
+                <conditional-field condition="(statusId == 'TmshInProcess')" title="ID (Click to Edit Entry)">
+                    <container-dialog id="EditTimeDialog" button-text="${timeEntryId}">
                     <form-single name="EditTimeForm" transition="editTimeEntry">
                         <field name="partyId"><default-field><hidden/></default-field></field>
                         <field name="timeEntryId"><default-field title="Time Entry ID"><hidden/></default-field></field>
@@ -66,7 +70,13 @@
                         <field name="fromDateRow"><default-field><hidden default-value="${fromDateRow}"/></default-field></field>
                         <field name="timesheetId"><default-field><hidden default-value="${timesheetId}"/></default-field></field>
                     </form-single>
-                </container-dialog></default-field></field>
+                    </container-dialog>
+                </conditional-field>
+
+                <default-field title="ID (Click to Edit Entry)">
+                    <display/>
+                </default-field>
+            </field>
 
             <!-- partyId -->
             <field name="partyId">
